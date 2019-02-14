@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
-	"log"
 	"time"
 
 	"github.com/pkg/errors"
@@ -14,16 +13,25 @@ import (
 
 type Config struct {
 	SQLiteFile string
+	Slack      Slack
+}
+
+type Slack struct {
+	Token   string
+	Channel string
 }
 
 type SlackTmp struct {
-	Now        string
+	Count      int
 	StartTimes []string
 }
 
-const message = `{{ .Now }} のポモドーロ
+const (
+	title   = "%v のポモドーロ"
+	message = `count: {{ .Count }}
 {{ range $i, $v := .StartTimes }}* {{ $v }}
 {{ end }}`
+)
 
 const (
 	layout     = "2006-01-02"
@@ -50,13 +58,16 @@ func Run(c Config) error {
 		return errors.Wrap(err, "failed create tamplate")
 	}
 
-	log.Println(s)
+	slack := NewSlack(c.Slack.Token, "#006400", "#dc143c", "")
+	if err := slack.Send(fmt.Sprintf(title, now.Format(layoutDate)), c.Slack.Channel, s, true); err != nil {
+		return errors.Wrap(err, "failed send slack")
+	}
 	return nil
 }
 
 func exec(r result, now time.Time) (string, error) {
 	tmp := SlackTmp{
-		Now:        now.Format(layout),
+		Count:      r.count,
 		StartTimes: convStrs(r.startTimes),
 	}
 

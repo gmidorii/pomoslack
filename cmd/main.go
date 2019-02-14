@@ -11,6 +11,12 @@ import (
 
 type Config struct {
 	SQLiteFile string `yaml:"sqlite_file"`
+	Slack      Slack
+}
+
+type Slack struct {
+	Token   string `yaml:"token"`
+	Channel string `yaml:"channel"`
 }
 
 func parse(f string) (pomoslack.Config, error) {
@@ -29,6 +35,10 @@ func parse(f string) (pomoslack.Config, error) {
 
 	return pomoslack.Config{
 		SQLiteFile: config.SQLiteFile,
+		Slack: pomoslack.Slack{
+			Token:   config.Slack.Token,
+			Channel: config.Slack.Channel,
+		},
 	}, nil
 }
 
