@@ -1,7 +1,7 @@
 BIN=pomos
 
 build:
-	cd cmd && go build -o $(BIN)
+	cd cmd/pomos && go build -o $(BIN)
 
 run: build
-	./cmd/pomos -c ./cmd/config.yaml
+	./cmd/pomos/$(BIN) -c ./config.yaml
