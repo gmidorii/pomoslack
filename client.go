@@ -27,7 +27,7 @@ type SlackTmp struct {
 }
 
 const (
-	title   = "%v のポモドーロ"
+	title   = "%v :tomato:"
 	message = `count: {{ .Count }}
 {{ range $i, $v := .StartTimes }}* {{ $v }}
 {{ end }}`

@@ -20,17 +20,22 @@ type slackNotify struct {
 }
 
 func NewSlack(token, okColor, errColor string, mentions string) Notifier {
+	sn := slackNotify{
+		token:    token,
+		okColor:  okColor,
+		errColor: errColor,
+	}
+	if mentions == "" {
+		return sn
+	}
+
 	var mentionStr string
 	for _, m := range strings.Split(mentions, ",") {
 		mentionStr = fmt.Sprintf("%v<%v>,", mentionStr, m)
 	}
+	sn.mentions = mentionStr
 
-	return slackNotify{
-		token:    token,
-		okColor:  okColor,
-		errColor: errColor,
-		mentions: mentionStr,
-	}
+	return sn
 }
 
 func (s slackNotify) Send(title, dest, body string, ok bool) error {
